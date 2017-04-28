@@ -45,7 +45,7 @@ int main(){
             }
             text += line + "\n";
         } else {
-            paragraph = line + "\n";
+            paragraph += line + " ";
         }
     }
     if(paragraph != ""){

@@ -1,6 +1,9 @@
+\section{The first}
 Part of natural, non-monotonous speech involves applying greater emphasis to some words than others in the contexts of larger units of text, such as sentences or phrases.
+\section{The second}
 It is typically the syllable of primary stress in the word that receives most of this extra emphasis~\cite{jurafsky_speech_2009}.
 The increased emphasis of a word or syllable in the context of a sentence, phrase, or other multi-word unit has gone by many different names in the literature.
+
 I will call it prosodic stress.<fn> Wikipedia Stress: Prosodic stress, or sentence stress, refers to stress patterns that apply at a higher level than the individual word – namely within a prosodic unit.
 It may involve a certain natural stress pattern characteristic of a given language, but may also involve the placing of emphasis on particular words because of their relative importance (contrastive stress).</fn>  Given the way the word "prosodic" is used in the literature, it is clear that what I am interested in is a prosodic feature of a text.
 As Logan De Ley puts is,
