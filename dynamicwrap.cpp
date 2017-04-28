@@ -27,10 +27,26 @@ string processParagraph(string paragraph){
     return paragraph;
 }
 bool isSpecial(string line){
-    if (line == "") {
-        return true;
-    }
-    return regex_match(line, regex("\\s*\\\\[a-zA-Z]+\\{.*\\}\\s*"));
+    return regex_match(line, regex("(\\s*|\\s*\\\\[a-zA-Z]+(\\{.*\\})?\\s*)"));
+}
+
+// http://stackoverflow.com/a/217605 for the next three functions
+// trim from start (in place)
+static inline void ltrim(std::string &s) {
+    s.erase(s.begin(), std::find_if(s.begin(), s.end(),
+            std::not1(std::ptr_fun<int, int>(std::isspace))));
+}
+
+// trim from end (in place)
+static inline void rtrim(std::string &s) {
+    s.erase(std::find_if(s.rbegin(), s.rend(),
+            std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
+}
+
+// trim from both ends (in place)
+static inline void trim(std::string &s) {
+    ltrim(s);
+    rtrim(s);
 }
 int main(){
     string line;
@@ -45,6 +61,7 @@ int main(){
             }
             text += line + "\n";
         } else {
+            trim(line);
             paragraph += line + " ";
         }
     }
@@ -52,6 +69,5 @@ int main(){
         paragraph = processParagraph(paragraph);
         text += paragraph + "\n";
     }
-    text = text.erase(text.size()-1);
     cout << text;
 }
