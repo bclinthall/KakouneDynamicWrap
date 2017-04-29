@@ -9,7 +9,8 @@ hook global WinDisplay .* %{
 }
 
 hook global WinDisplay .*\.tex %{
-    remove-hooks window bch_ctrl # removes above hook
+    # removes above hook
+    remove-hooks window bch_ctrl 
     hook window InsertChar [^\s] %{
          try %{ # checks for 'jk' and does <esc> if found.
             exec -no-hooks -draft hH<a-k>jk<ret>d

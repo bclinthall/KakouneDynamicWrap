@@ -1,7 +1,9 @@
 #include <iostream>
 #include <string>
 #include <regex>
-using namespace std;
+
+const int SEARCH_BACK_DISTANCE = 30;
+const int COLUMNS = 80;
 
 // http://stackoverflow.com/a/217605 for the next three functions
 // trim from start (in place)
@@ -22,46 +24,58 @@ static inline void trim(std::string &s) {
     rtrim(s);
 }
 
-// a function called 'searchForwardForSpace' and another
-// called 'searchBackwardForSpace' would be helpful.
-string processParagraph(string paragraph){
+
+
+int searchBackwardForSpace(int i, int startingPlace, std::string paragraph){
+    //search backward up to SEARCH_BACK_DISTANCE char for a space.
+    while (i > (startingPlace - SEARCH_BACK_DISTANCE) && paragraph[i] != ' '){
+        i--;
+    }
+    return i;
+}
+int searchForwardForSpace(int i, std::string paragraph){
+    while (i < paragraph.size() && paragraph[i] != ' '){
+        i++;
+    }
+    return i;
+}
+int breakLine(int i, std::string& paragraph){
+    int startingPlace = i;
+    i = searchBackwardForSpace(i, startingPlace, paragraph);
+    if (paragraph[i] != ' '){
+        i = startingPlace;
+        i = searchForwardForSpace(i, paragraph);                
+    }
+    if (paragraph[i] == ' '){
+        paragraph[i] = '\n';
+    }
+    return i;
+}
+std::string processParagraph(std::string paragraph){
     int charCounter = 0;
     for (std::string::size_type i = 0; i < paragraph.size(); i++) {
-        if (charCounter < 80) {
+        if (charCounter < COLUMNS) {
             charCounter++;
         } else {
-            int startingPlace = i;
-            //search backward up to 30 char for a space.
-            while (i > startingPlace - 30 && paragraph[i] != ' '){
-                i--;
-            }
-            if (paragraph[i] != ' '){
-                // if we didn't find one, go back to startingPlace
-                // and search forward for a space. 
-                i = startingPlace;
-                while (i < paragraph.size() && paragraph[i] != ' '){
-                    i++;
-                }
-            }
-            if (paragraph[i] == ' '){
-                paragraph[i] = '\n';
-                charCounter = 0;
-            }
+            i = breakLine(i, paragraph);
+            charCounter = 0;
         } 
     }
     rtrim(paragraph);
     return paragraph;
 }
-bool isSpecial(string line){
-    return regex_match(line, regex("(\\s*|\\s*\\\\[a-zA-Z]+(\\{.*\\})?\\s*)"));
+
+
+
+bool isSpecial(std::string line){
+    //return std::regex_match(line, std::regex("(\\s*|\\s*\\\\[a-zA-Z]+(\\[.*\\])*\\s*)*(\\{.*\\}\\s*)*)"));
+    return std::regex_match(line, std::regex("(\\s*|\\s*\\\\[a-zA-Z]+(\\{.*\\})?\\s*)"));
 }
-
-
 int main(){
-    string line;
-    string paragraph = "";
-    string result = "";
-    while (getline(cin, line)) {
+    std::string line;
+    std::string paragraph = "";
+    std::string result = "";
+    while (getline(std::cin, line)) {
         if (!isSpecial(line)){
             // We are going to accumulate a paragraph of non-special lines.
             trim(line);
@@ -70,7 +84,7 @@ int main(){
             // Special lines (empty lines and tex commands) signal that the paragraph
             // we've been accumulating is done.  So, process the 
             // paragraph and add it to the result.
-            // Then throw the special line on the result.
+            // Then append the special line to the result.
             if(paragraph != ""){
                 paragraph = processParagraph(paragraph);
                 result += paragraph + "\n";
@@ -83,5 +97,5 @@ int main(){
         paragraph = processParagraph(paragraph);
         result += paragraph + "\n";
     }
-    cout << result;
+    std::cout << result;
 }
