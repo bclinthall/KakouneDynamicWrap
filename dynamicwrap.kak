@@ -20,11 +20,11 @@ hook global WinDisplay .*\.tex %{
             exec -no-hooks \%s<ret>
             eval -no-hooks -draft -itersel %{
                 try %{
-                    exec -draft l<a-K>\n<ret>
-                    %sh{ echo "_____try" >> ~/log.txt }
+                    # trigger catch block if char after  is \n
+                    exec -draft l<a-K>\n<ret> 
                 } catch %{
+                    # insert a space after 
                     exec "li <esc>h"
-                    %sh{ echo "_____catch" >> ~/log.txt }
                 }
             }
             exec -no-hooks d
