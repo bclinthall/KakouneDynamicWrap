@@ -3,6 +3,25 @@
 #include <regex>
 using namespace std;
 
+// http://stackoverflow.com/a/217605 for the next three functions
+// trim from start (in place)
+static inline void ltrim(std::string &s) {
+    s.erase(s.begin(), std::find_if(s.begin(), s.end(),
+            std::not1(std::ptr_fun<int, int>(std::isspace))));
+}
+
+// trim from end (in place)
+static inline void rtrim(std::string &s) {
+    s.erase(std::find_if(s.rbegin(), s.rend(),
+            std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
+}
+
+// trim from both ends (in place)
+static inline void trim(std::string &s) {
+    ltrim(s);
+    rtrim(s);
+}
+
 // a function called 'searchForwardForSpace' and another
 // called 'searchBackwardForSpace' would be helpful.
 string processParagraph(string paragraph){
@@ -25,40 +44,19 @@ string processParagraph(string paragraph){
                 }
             }
             if (paragraph[i] == ' '){
-                // we found a space
-                //if (i>0 && paragraph[i-1] == u'') {
-                //    paragraph = paragraph.insert(i-1, "_\n");
-                //}else{
-                    paragraph[i] = '\n';
-                //}
+                paragraph[i] = '\n';
                 charCounter = 0;
             }
         } 
     }
+    rtrim(paragraph);
     return paragraph;
 }
 bool isSpecial(string line){
     return regex_match(line, regex("(\\s*|\\s*\\\\[a-zA-Z]+(\\{.*\\})?\\s*)"));
 }
 
-// http://stackoverflow.com/a/217605 for the next three functions
-// trim from start (in place)
-static inline void ltrim(std::string &s) {
-    s.erase(s.begin(), std::find_if(s.begin(), s.end(),
-            std::not1(std::ptr_fun<int, int>(std::isspace))));
-}
 
-// trim from end (in place)
-static inline void rtrim(std::string &s) {
-    s.erase(std::find_if(s.rbegin(), s.rend(),
-            std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
-}
-
-// trim from both ends (in place)
-static inline void trim(std::string &s) {
-    ltrim(s);
-    rtrim(s);
-}
 int main(){
     string line;
     string paragraph = "";
@@ -83,7 +81,7 @@ int main(){
     }
     if(paragraph != ""){
         paragraph = processParagraph(paragraph);
-        result += paragraph;
+        result += paragraph + "\n";
     }
     cout << result;
 }

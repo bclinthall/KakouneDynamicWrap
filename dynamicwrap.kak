@@ -18,26 +18,18 @@ hook global WinDisplay .*\.tex %{
             exec -no-hooks -draft -itersel <a-a>p|kak_dynamicwrap<ret>
             exec -no-hooks <esc>
             exec -no-hooks \%s<ret>
-            #exec -no-hooks  L|tee<space>-a<space>~/before.txt<ret>h
             eval -no-hooks -draft -itersel %{
                 try %{
                     exec -draft l<a-K>\n<ret>
-                    %sh{ echo "_____try" >> ~/after.txt }
+                    %sh{ echo "_____try" >> ~/log.txt }
                 } catch %{
                     exec "li <esc>h"
-                    %sh{ echo "_____catch" >> ~/after.txt }
+                    %sh{ echo "_____catch" >> ~/log.txt }
                 }
             }
             exec -no-hooks d
             exec -no-hooks L|tee<space>-a<space>~/after.txt<ret>h
-           # %sh{ echo "_____" >> ~/after.txt }
             exec -no-hooks i
-            #spaceIfNeeded
         #}
-    }
-}
-def spaceIfNeeded %{
-    try %{
-        exec -no-hooks -iterself l<a-k>\n<ret>i___<esc>h
     }
 }
