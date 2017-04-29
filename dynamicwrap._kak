@@ -1,0 +1,22 @@
+# The special unicode character is \uE001.
+
+hook global WinDisplay .*\.tex %{
+    hook window InsertChar [^\s] %{
+            exec -no-hooks 
+            exec -no-hooks -draft -itersel <a-a>p|kak_dynamicwrap<ret>
+            exec -no-hooks <esc>
+            exec -no-hooks \%s<ret>
+            eval -no-hooks -draft -itersel %{
+                try %{
+                    # trigger catch block if char after  is \n
+                    exec -draft l<a-K>\n<ret> 
+                } catch %{
+                    # insert a space after 
+                    exec "li <esc>h"
+                }
+            }
+            exec -no-hooks d
+            exec -no-hooks L|tee<space>-a<space>~/after.txt<ret>h
+            exec -no-hooks i
+    }
+}
