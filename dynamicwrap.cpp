@@ -2,27 +2,38 @@
 #include <string>
 #include <regex>
 using namespace std;
+
+// a function called 'searchForwardForSpace' and another
+// called 'searchBackwardForSpace' would be helpful.
 string processParagraph(string paragraph){
-    int linecounter = 0;
+    int charCounter = 0;
     for (std::string::size_type i = 0; i < paragraph.size(); i++) {
-        if (i > 0 && linecounter == 80) {
-            int place = i;
-            while (i > place - 30 && paragraph[i] != ' '){
+        if (charCounter < 80) {
+            charCounter++;
+        } else {
+            int startingPlace = i;
+            //search backward up to 30 char for a space.
+            while (i > startingPlace - 30 && paragraph[i] != ' '){
                 i--;
             }
             if (paragraph[i] != ' '){
-                i = place;
+                // if we didn't find one, go back to startingPlace
+                // and search forward for a space. 
+                i = startingPlace;
                 while (i < paragraph.size() && paragraph[i] != ' '){
                     i++;
                 }
             }
             if (paragraph[i] == ' '){
-                paragraph[i] = '\n';
-                linecounter = 0;
+                // we found a space
+                //if (i>0 && paragraph[i-1] == u'') {
+                //    paragraph = paragraph.insert(i-1, "_\n");
+                //}else{
+                    paragraph[i] = '\n';
+                //}
+                charCounter = 0;
             }
-        } else {
-            linecounter++;
-        }
+        } 
     }
     return paragraph;
 }
@@ -51,23 +62,28 @@ static inline void trim(std::string &s) {
 int main(){
     string line;
     string paragraph = "";
-    string text = "";
+    string result = "";
     while (getline(cin, line)) {
-        if (isSpecial(line)){
-            if(paragraph != ""){
-                paragraph = processParagraph(paragraph);
-                text += paragraph + "\n";
-                paragraph = "";
-            }
-            text += line + "\n";
-        } else {
+        if (!isSpecial(line)){
+            // We are going to accumulate a paragraph of non-special lines.
             trim(line);
             paragraph += line + " ";
+        } else {
+            // Special lines (empty lines and tex commands) signal that the paragraph
+            // we've been accumulating is done.  So, process the 
+            // paragraph and add it to the result.
+            // Then throw the special line on the result.
+            if(paragraph != ""){
+                paragraph = processParagraph(paragraph);
+                result += paragraph + "\n";
+                paragraph = "";
+            }
+            result += line + "\n";
         }
     }
     if(paragraph != ""){
         paragraph = processParagraph(paragraph);
-        text += paragraph + "\n";
+        result += paragraph;
     }
-    cout << text;
+    cout << result;
 }
