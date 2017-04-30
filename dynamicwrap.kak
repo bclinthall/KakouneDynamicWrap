@@ -1,30 +1,30 @@
 # The special unicode character is \uE001.
 
 # allows 'jk' to function as <esc>
-hook global WinDisplay .* %{
-    hook -group bch_ctrl window InsertChar k %{ try %{
-        exec -no-hooks -draft hH <a-k>jk<ret> d
-        exec <esc>
-    }}
-}
-hook global WinDisplay (.*\.tex|.*\.txt) %{
-    # removes above hook
-    remove-hooks window bch_ctrl 
+# hook global WinDisplay .* %{
+#    hook -group bch_ctrl window InsertChar k %{ try %{
+#        exec -no-hooks -draft hH <a-k>jk<ret> d
+#        exec <esc>
+#    }}
+#}
+#hook global WinDisplay (.*\.tex|.*\.txt) %{
+#    # removes above hook
+#    remove-hooks window bch_ctrl 
+#    hook -group dynamicwrap window InsertChar [^\s] %{
+#        try %{ # checks for 'jk' and does <esc> if found.
+#            exec -no-hooks -draft hH<a-k>jk<ret>d
+#            exec <esc>
+#        } catch %{ # otherwise, do dynamic wrap
+#            dynamicwrap
+#        }
+#    }
+#}
+
+hook global WinDisplay (.*\.tex|.*.txt) %{
     hook -group dynamicwrap window InsertChar [^\s] %{
-        try %{ # checks for 'jk' and does <esc> if found.
-            exec -no-hooks -draft hH<a-k>jk<ret>d
-            exec <esc>
-        } catch %{ # otherwise, do dynamic wrap
-            dynamicwrap
-        }
+        dynamicwrap
     }
 }
-
-# hook global WinDisplay (.*\.tex|.*.txt) %{
-#     hook -group dynamicwrap window InsertChar [^\s] %{
-#         dynamicwrap
-#     }
-# }
 
 
 def dynamicwrap %{
