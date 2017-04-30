@@ -1,6 +1,6 @@
 # KakouneDynamicWrap
 
-Say you're writing in markdown or tex and you want your lines automatically 
+Say you're writing in plaintext or tex and you want your lines automatically 
 broken at 80 characters.  As you type, this plugin takes the paragraph you are working 
 on, and breakes each of its lines at sensible places short of 80 character. It is intended 
 as an alternative to softwrap.
