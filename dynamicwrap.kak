@@ -20,7 +20,7 @@
 #    }
 #}
 
-hook global WinDisplay (.*\.tex|.*.txt) %{
+hook global WinDisplay (.*\.tex|.*\.txt|.*\.md) %{
     hook -group dynamicwrap window InsertChar [^\s] %{
         dynamicwrap
     }
