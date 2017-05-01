@@ -14,4 +14,5 @@ Then dynamic wrap should work.
 If you haven't yet setup `$XDG_CONFIG_HOME/kak/autoload`, be forewarned that you
 might need to put simlinks to `.../kak/rc/*` in your autoload folder. https://github.com/mawww/kakoune/issues/1
 
-
+Here is a demonstration of the difference between dynamicwrap and kakoune's built in autowrap:
+[![Asciicast](https://asciinema.org/a/2379cer5hr09uvovqaltcjx4y.png)](https://asciinema.org/a/2379cer5hr09uvovqaltcjx4y)
