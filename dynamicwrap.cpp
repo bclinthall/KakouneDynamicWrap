@@ -2,6 +2,8 @@
 #include <string>
 #include <regex>
 
+// I need to not just trim but strip the whole indentation sequence from the front of
+// the line.
 const int SEARCH_BACK_DISTANCE = 30;
 const int COLUMNS = 80;
 
@@ -39,7 +41,7 @@ int searchForwardForSpace(int i, std::string paragraph){
     }
     return i;
 }
-int breakLine(int i, std::string& paragraph){
+int breakLine(int i, std::string& paragraph, std::string paragraphIndent){
     int startingPlace = i;
     i = searchBackwardForSpace(i, startingPlace, paragraph);
     if (paragraph[i] != ' '){
@@ -48,54 +50,86 @@ int breakLine(int i, std::string& paragraph){
     }
     if (paragraph[i] == ' '){
         paragraph[i] = '\n';
+        paragraph = paragraph.insert(i+1, paragraphIndent);
     }
     return i;
 }
-std::string processParagraph(std::string paragraph){
+std::string processParagraph(std::string paragraph, std::string paragraphIndent, std::string result){
     int charCounter = 0;
     for (std::string::size_type i = 0; i < paragraph.size(); i++) {
         if (charCounter < COLUMNS) {
             charCounter++;
         } else {
-            i = breakLine(i, paragraph);
+            i = breakLine(i, paragraph, paragraphIndent);
             charCounter = 0;
         } 
     }
     rtrim(paragraph);
-    return paragraph;
+    return result + paragraph + "---\n";
 }
 
-
-
-bool isSpecial(std::string line){
+std::string getIndent(std::string line) {
+    std::smatch match;
+    std::regex_match(line, match, std::regex("(( |>)*).*"));
+    return match[1];
+}
+bool isIndentChange(std::string line, std::string paragraphIndent){
+    std::string indent = getIndent(line);
+    return indent != "" && indent != paragraphIndent;
+}
+bool isSpecial(std::string line){ 
     //return std::regex_match(line, std::regex("(\\s*|\\s*\\\\[a-zA-Z]+(\\[.*\\])*\\s*)*(\\{.*\\}\\s*)*)"));
-    return std::regex_match(line, std::regex("(\\s*|\\s*\\\\[a-zA-Z]+(\\{.*\\})?\\s*)"));
+    bool isEmptyLine = std::regex_match(line, std::regex("\\s*"));
+    bool isTexCommand = std::regex_match(line, std::regex("\\s*\\\\[a-zA-Z]+(\\{.*\\})*\\s*"));
+    return isEmptyLine || isTexCommand;
 }
 int main(){
     std::string line;
     std::string paragraph = "";
     std::string result = "";
+    std::string paragraphIndent;
     while (getline(std::cin, line)) {
-        if (!isSpecial(line)){
+        if(paragraph == "") paragraphIndent = getIndent(line);
+        bool isSpecialLine = isSpecial(line);
+        bool isIndentChangeLine = isIndentChange(line, paragraphIndent);
+        if (!isSpecialLine && !isIndentChangeLine){
+            std::cout << "accumulate\n";
             // We are going to accumulate a paragraph of non-special lines.
             trim(line);
             paragraph += line + " ";
         } else {
-            // Special lines (empty lines and tex commands) signal that the paragraph
-            // we've been accumulating is done.  So, process the 
-            // paragraph and add it to the result.
-            // Then append the special line to the result.
+            std::cout << "don't accumulate\n";
+            if(isSpecialLine){
+                std::cout << "isSpecialLine\n";
+            }else {
+                std::cout << "indentChange\n";
+            }
             if(paragraph != ""){
-                paragraph = processParagraph(paragraph);
-                result += paragraph + "\n";
+                // Special lines (empty lines and tex commands) and indent changes 
+                // signal that the paragraph we've been accumulating is done.  So, 
+                // process the paragraph (if any) and add it to the result.
+                result = processParagraph(paragraph, paragraphIndent, result);
                 paragraph = "";
             }
-            result += line + "\n";
+            // Now deal with the line that signaled the end of the previous paragraph.
+            // Either by making it the start of a new paragraph or by appending it to 
+            // result.
+            if(!isSpecialLine && isIndentChangeLine){
+                // The new paragraph was triggered by an indent change. 
+                // Make line the start of a new paragraph.
+                paragraphIndent = getIndent(line);
+                trim(line);
+                paragraph += line + " ";
+            } else {
+                // If the new paragraph wasn't triggered by an indent change,
+                // then it must have been triggered by a special line.
+                // Append it directly to the result.
+                result += line + "\n";
+            }
         }
     }
     if(paragraph != ""){
-        paragraph = processParagraph(paragraph);
-        result += paragraph + "\n";
+        result = processParagraph(paragraph, paragraphIndent, result);
     }
     std::cout << result;
 }
