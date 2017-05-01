@@ -21,11 +21,18 @@
 #}
 
 hook global WinDisplay (.*\.tex|.*\.txt) %{
-    hook -group dynamicwrap window InsertChar [^\s] %{
+    dynamicwrap-enable
+}
+
+def dynamicwrap-enable %{
+    hook -group dynamicwrap window InsertChar \h %{
         dynamicwrap
     }
 }
 
+def dynamicwrap-disable %{
+    remove-hooks window dynamicwrap
+}
 
 def dynamicwrap %{
     exec -no-hooks 
