@@ -10,33 +10,33 @@
 #hook global WinDisplay (.*\.tex|.*\.txt) %{
 #    # removes above hook
 #    remove-hooks window bch_ctrl 
-#    hook -group dynamicwrap window InsertChar [^\s] %{
+#    hook -group hardwrap window InsertChar [^\s] %{
 #        try %{ # checks for 'jk' and does <esc> if found.
 #            exec -no-hooks -draft hH<a-k>jk<ret>d
 #            exec <esc>
 #        } catch %{ # otherwise, do dynamic wrap
-#            dynamicwrap
+#            hardwrap
 #        }
 #    }
 #}
 
 hook global WinDisplay (.*\.tex|.*\.txt) %{
-#    dynamicwrap-enable
+#    hardwrap-enable
 }
 
-def dynamicwrap-enable %{
-    hook -group dynamicwrap window InsertChar \h %{
-        dynamicwrap
+def hardwrap-enable %{
+    hook -group hardwrap window InsertChar [^\n] %{
+        hardwrap
     }
 }
 
-def dynamicwrap-disable %{
-    remove-hooks window dynamicwrap
+def hardwrap-disable %{
+    remove-hooks window hardwrap
 }
 
-def dynamicwrap %{
+def hardwrap %{
     exec -no-hooks 
-    exec -no-hooks -draft -itersel <a-a>p|kak_dynamicwrap<ret>
+    exec -no-hooks -draft -itersel "<a-a>pKGls\n<ret>d<a-a>p|fold -s -w 80<ret>"
     exec -no-hooks <esc>
     exec -no-hooks \%s<ret>
     eval -no-hooks -draft -itersel %{
@@ -48,7 +48,8 @@ def dynamicwrap %{
             exec "li <esc>h"
         }
     }
-    exec -no-hooks d
-    exec -no-hooks L|tee<space>-a<space>~/after.txt<ret>h
-    exec -no-hooks i
+    exec -no-hooks c 
+#    exec -no-hooks d
+#    exec -no-hooks L|tee<space>-a<space>~/after.txt<ret>h
+#    exec -no-hooks i
 }
