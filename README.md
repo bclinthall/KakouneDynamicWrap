@@ -7,7 +7,7 @@ as an alternative to softwrap.
 
 ## Installation
 
-Clone the project into your kakoune `autoload` directory.  The change directories into
+Clone the project into your kakoune `autoload` directory.  Then change directories into
 it and run `make`.  Next you'll need to get the `kak_dynamicwrap` executable onto your path.
 Then dynamic wrap should work.
 
